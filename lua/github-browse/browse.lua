@@ -19,7 +19,7 @@ end
 
 ---@return string
 M.browse = function()
-	return M.config.opt
+  return M.config.opt
 end
 
 return M
