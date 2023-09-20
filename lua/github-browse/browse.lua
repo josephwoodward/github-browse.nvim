@@ -17,31 +17,31 @@ end
 
 ---@return string
 M.browse = function()
-    local fn = vim.fn.expand('%')
-    print(fn)
+  local fn = vim.fn.expand("%")
+  print(fn)
 
-    local output = ""
-    -- TODO: Get relative path to the root, perhaps move to separate function so we can add a test for it, perhaps move to separate function so we can add a test for it.
-    vim.fn.jobstart("gh browse " .. fn .. ":1", {
-      on_stdout = function(_, d, _)
-        output = output .. vim.fn.join(d)
-            print(output)
-      end,
-    })
+  local output = ""
+  -- TODO: Get relative path to the root, perhaps move to separate function so we can add a test for it, perhaps move to separate function so we can add a test for it.
+  vim.fn.jobstart("gh browse " .. fn .. ":1", {
+    on_stdout = function(_, d, _)
+      output = output .. vim.fn.join(d)
+      print(output)
+    end,
+  })
 
-    -- local job = vim.fn.jobstart('gh version', {
-    --         -- cwd = '/path/to/working/dir',
-    --         on_exit = function ()
-    --             print "on exit"
-    --         end,
-    --         on_stdout = function ()
-    --            print "on stdout"
-    --         end,
-    --         on_stderr = function ()
-    --            print "on stderr"
-    --         end
-    --     }
-    -- )
+  -- local job = vim.fn.jobstart('gh version', {
+  --         -- cwd = '/path/to/working/dir',
+  --         on_exit = function ()
+  --             print "on exit"
+  --         end,
+  --         on_stdout = function ()
+  --            print "on stdout"
+  --         end,
+  --         on_stderr = function ()
+  --            print "on stderr"
+  --         end
+  --     }
+  -- )
   return M.config.opt
 end
 
