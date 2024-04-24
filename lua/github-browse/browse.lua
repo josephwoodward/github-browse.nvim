@@ -71,7 +71,7 @@ M.browse = function()
   local open = open_program()
   os.execute(string.format('%s "%s" >/dev/null 2>&1', open, url))
 
-  -- keymap.set("n", "<leader>gb", vim.cmd.ShowInGitHub, { desc = "Show in GitHub", silent = true })
+  vim.keymap.set("n", "<leader>gb", vim.cmd.GithubBrowse, { desc = "Show in GitHub", silent = true })
 
   return M.config.opt
 end
