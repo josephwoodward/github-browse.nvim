@@ -7,6 +7,56 @@ local config = {
 ---@class BrowseModule
 local M = {}
 
+-- Show current line in GitHub {{{1
+local function trim_space(s)
+  return string.gsub(s, "%s+$", "")
+end
+
+local function get_github_repo()
+  local url = trim_space(vim.fn.system("git config --get remote.origin.url"))
+  if string.find(url, "^git@") then
+    local parts = {}
+    for part in string.gmatch(url, "([^:]+)") do
+      table.insert(parts, part)
+    end
+
+    url = "https://github.com/" .. parts[2]
+  end
+
+  return string.gsub(url, ".git$", "")
+end
+
+local function get_current_branch()
+  -- local result = trim_space(vim.fn.system("git symbolic-ref refs/remotes/origin/HEAD"))
+  -- local parts = {}
+  -- for part in string.gmatch(result, "([^/]+)") do
+  --   table.insert(parts, part)
+  -- end
+  -- return parts[#parts]
+
+  local result = trim_space(vim.fn.system("git branch --show-current"))
+  return result
+end
+
+local function generate_github_link()
+  local repo_root = vim.fs.dirname(vim.fs.find(".git", { upward = true })[1])
+  local repo = get_github_repo()
+  local branch = get_current_branch()
+  local path = string.sub(vim.fn.expand("%:p"), string.len(repo_root .. "/") + 1)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local url = string.format("%s/blob/%s/%s?plain=1#L%s", repo, branch, path, cursor_pos[1])
+  return url
+end
+
+local function open_program()
+  local platform = trim_space(vim.fn.system("uname"))
+  local exe = "xdg-open"
+  if platform == "Darwin" then
+    exe = "open"
+  end
+  return exe
+end
+
 ---@type Config
 M.config = config
 
@@ -17,31 +67,12 @@ end
 
 ---@return string
 M.browse = function()
-  local fn = vim.fn.expand("%")
-  print(fn)
+  local url = generate_github_link()
+  local open = open_program()
+  os.execute(string.format('%s "%s" >/dev/null 2>&1', open, url))
 
-  local output = ""
-  -- TODO: Get relative path to the root, perhaps move to separate function so we can add a test for it, perhaps move to separate function so we can add a test for it.
-  vim.fn.jobstart("gh browse " .. fn .. ":1", {
-    on_stdout = function(_, d, _)
-      output = output .. vim.fn.join(d)
-      print(output)
-    end,
-  })
+  keymap.set("n", "<leader>gb", vim.cmd.ShowInGitHub, { desc = "Show in GitHub", silent = true })
 
-  -- local job = vim.fn.jobstart('gh version', {
-  --         -- cwd = '/path/to/working/dir',
-  --         on_exit = function ()
-  --             print "on exit"
-  --         end,
-  --         on_stdout = function ()
-  --            print "on stdout"
-  --         end,
-  --         on_stderr = function ()
-  --            print "on stderr"
-  --         end
-  --     }
-  -- )
   return M.config.opt
 end
 
