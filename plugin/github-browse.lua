@@ -13,4 +13,5 @@ vim.g.loaded_github_browse = 1
 -- usually it is better to define most commands/mappings in the setup function
 -- Be careful to not overuse this file!
 local gh = require("github-browse.browse")
-vim.api.nvim_create_user_command("GithubBrowse", gh.browse, {})
+vim.api.nvim_create_user_command("GithubBrowseRepo", gh.browse_repo, {})
+vim.api.nvim_create_user_command("GithubBrowseToLine", gh.browse_to_line, {})
