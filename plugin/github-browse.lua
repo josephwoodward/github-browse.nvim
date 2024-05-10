@@ -15,4 +15,4 @@ vim.g.loaded_github_browse = 1
 local gh = require("github-browse.browse")
 vim.api.nvim_create_user_command("GithubBrowseRepo", gh.browse_repo, {})
 vim.api.nvim_create_user_command("GithubBrowseLine", gh.browse_line, {})
-vim.api.nvim_create_user_command("GithubBrowseCommit", gh.browse_commit, {})
+vim.api.nvim_create_user_command("GithubBrowseCommit", gh.browse_commit, { nargs = "?" })

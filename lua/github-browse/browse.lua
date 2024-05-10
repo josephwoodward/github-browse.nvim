@@ -22,8 +22,15 @@ M.browse_repo = function()
   execute_command("browse")
 end
 
----@param commit string
-M.browse_commit = function(commit)
+---@param opts object
+M.browse_commit = function(opts)
+  local commit = opts.args or ""
+  if commit == "" then
+    -- return "Please specify commit" //TODO: Write test case for this
+    print("Error: Please specify commit")
+    return
+  end
+
   vim.fn.jobstart({ "gh", "browse", commit })
 end
 
