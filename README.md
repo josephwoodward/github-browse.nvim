@@ -24,6 +24,9 @@ The plugin defines commands that wrap the functionality of zoxide:
 
 ## Demo
 
-### Browse to line:
+### Browse to Line
 
-![neovim_plugin_browse_to_line](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/2c30f18c-c8fe-4bc7-a0cd-774be5499c6f)
+Go to the current line in GitHub:
+
+![browse-line](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/8cfffe4d-775e-4efa-ab1b-f8aaa3db0bef)
+
