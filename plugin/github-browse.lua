@@ -12,18 +12,15 @@ vim.g.loaded_github_browse = 1
 -- create any global command that does not depend on user setup
 -- usually it is better to define most commands/mappings in the setup function
 -- Be careful to not overuse this file!
-local gh = require("github-browse.browse")
-
-local commands
-commands = {
+local commands = {
   repo = function(_)
-    gh.browse_repo()
+    require("github-browse.browse").browse_repo()
   end,
   line = function(_)
-    gh.browse_line()
+    require("github-browse.browse").browse_line()
   end,
-  commit = function(args)
-    gh.browse_commit(args)
+  commit = function(opts)
+    require("github-browse.browse").browse_commit(opts)
   end,
 }
 
