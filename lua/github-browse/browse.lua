@@ -27,7 +27,7 @@ M.browse_commit = function(opts)
   local commit = opts.args or ""
   if commit == "" then
     -- return "Please specify commit" //TODO: Write test case for this
-    print("Error: Please specify commit")
+    vim.notify("GithubBrowse: please specify a commit", vim.log.levels.ERROR)
     return
   end
 
