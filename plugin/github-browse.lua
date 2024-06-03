@@ -25,11 +25,16 @@ local commands = {
 }
 
 vim.api.nvim_create_user_command("GithubBrowse", function(opts)
-  commands[opts.fargs[1]](opts.args)
+  local f = commands[opts.fargs[1]]
+  if f ~= nil then
+    f(opts.args)
+    return
+  end
+
+  vim.api.nvim_err_writeln(string.format("[github-browse] unknown command: %s", opts.fargs[1]))
 end, {
   nargs = 1,
   complete = function(ArgLead, CmdLine, CursorPos)
-    -- return completion candidates as a list-like table
     return { "repo", "line", "commit" }
   end,
 })
