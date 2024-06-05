@@ -19,7 +19,7 @@ A small Neovim wrapper around the GitHub CLI `gh browse` tool to enable fast sha
 The plugin defines commands that wrap the functionality of zoxide:
 
 - `:GithubBrowse repo`: Opens the current GitHub repository in your default web browser.
-- `:GithubBrowse line`: Opens the current GitHub repository in your default web browser.
+- `:GithubBrowse line`: Opens the current line your cursor is Github using your default web browser.
 - `:GithubBrowse commit`: Opens given commit in GitHub in your default web browser.
 
 ## Demos
