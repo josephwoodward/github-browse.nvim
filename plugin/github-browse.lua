@@ -16,11 +16,16 @@ local commands = {
   repo = function(_)
     require("github-browse.browse").browse_repo()
   end,
+  -- TODO: enable ability to copy link to clipboard
   line = function(_)
     require("github-browse.browse").browse_line()
   end,
   commit = function(opts)
     require("github-browse.browse").browse_commit(opts)
+  end,
+  -- TODO: Implement ability to list PRs
+  pr = function()
+    require("github-browse.browse").browse_prs()
   end,
 }
 
@@ -35,6 +40,6 @@ vim.api.nvim_create_user_command("GithubBrowse", function(opts)
 end, {
   nargs = 1,
   complete = function(ArgLead, CmdLine, CursorPos)
-    return { "repo", "line", "commit" }
+    return { "repo", "line", "commit", "pr" }
   end,
 })
