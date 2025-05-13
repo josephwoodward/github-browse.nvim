@@ -39,13 +39,66 @@ local function callback(_, data, event)
 end
 
 M.browse_prs = function()
+
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
+  local conf = require("telescope.config").values
+
+  local list_prs = function(opts, data)
+    opts = opts or {}
+    pickers
+        .new(opts, {
+          prompt_title = "View Pull Requests",
+          -- finder = finders.new_table({
+          --   -- results = { "red", "green", "blue" },
+          --   results = data
+          -- }),
+   finder = finders.new_table {
+      results = {
+        { "red", "#ff0000" },
+        { "green", "#00ff00" },
+        { "blue", "#0000ff" },
+      },
+      entry_maker = function(entry)
+        return {
+          value = entry,
+          display = entry[1],
+          ordinal = entry[1],
+        }
+      end
+    },
+          sorter = conf.generic_sorter(opts),
+        })
+        :find()
+  end
+
+  local cb = function(_, data, event)
+    if event == "exit" then
+      -- TODO: handle this gracefully
+    elseif event == "stdout" or event == "stderr" then
+      list_prs({}, data)
+    end
+  end
+
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list", {
-      on_stdout = callback,
+    vim.fn.jobstart("gh pr list --jq '.[] | .url' --json url", {
+      on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
     }),
   })
+
+  -- local colors = function(opts)
+  --   opts = opts or {}
+  --   pickers.new(opts, {
+  --     prompt_title = "colors",
+  --     finder = finders.new_table {
+  --       results = { "red", "green", "blue" }
+  --     },
+  --     sorter = conf.generic_sorter(opts),
+  --   }):find()
+  -- end
+  -- colors()
 end
 
 ---@param opts object
@@ -76,19 +129,19 @@ M.browse_line = function(opts)
   vim.fn.jobstart({ "gh", "browse", string.format("%s:%s", file, cursor_pos) })
 end
 
-M.copy_line = function (opts)
+M.copy_line = function(opts)
   local cursor_pos, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local file = vim.fn.expand("%:.")
 
   -- vim.fn.jobstart({ "gh", "browse", string.format("gh browse %s:%s --no-brower", file, cursor_pos))
-  local cb = function (_, data, event)
-        if event == "exit" then
-          -- TODO: handle this gracefully
-        elseif event == "stdout" or event == "stderr" then
-          vim.fn.setreg('"', data)
-          vim.fn.setreg('+', data)
-          vim.notify("-> line copied to clipboard")
-        end
+  local cb = function(_, data, event)
+    if event == "exit" then
+      -- TODO: handle this gracefully
+    elseif event == "stdout" or event == "stderr" then
+      vim.fn.setreg('"', data)
+      vim.fn.setreg("+", data)
+      vim.notify("-> line copied to clipboard")
+    end
   end
 
   vim.fn.jobwait({
@@ -101,4 +154,3 @@ M.copy_line = function (opts)
 end
 
 return M
-
