@@ -39,7 +39,6 @@ local function callback(_, data, event)
 end
 
 M.browse_prs = function()
-
   local pickers = require("telescope.pickers")
   local finders = require("telescope.finders")
   local conf = require("telescope.config").values
@@ -53,20 +52,21 @@ M.browse_prs = function()
           --   -- results = { "red", "green", "blue" },
           --   results = data
           -- }),
-   finder = finders.new_table {
-      results = {
-        { "red", "#ff0000" },
-        { "green", "#00ff00" },
-        { "blue", "#0000ff" },
-      },
-      entry_maker = function(entry)
-        return {
-          value = entry,
-          display = entry[1],
-          ordinal = entry[1],
-        }
-      end
-    },
+          finder = finders.new_table({
+            -- results = {
+            --   { "red", "#ff0000" },
+            --   { "green", "#00ff00" },
+            --   { "blue", "#0000ff" },
+            -- },
+            results = data,
+            entry_maker = function(entry)
+              return {
+                value = entry.value,
+                display = entry.display,
+                ordinal = entry.ordinal,
+              }
+            end,
+          }),
           sorter = conf.generic_sorter(opts),
         })
         :find()
@@ -76,12 +76,24 @@ M.browse_prs = function()
     if event == "exit" then
       -- TODO: handle this gracefully
     elseif event == "stdout" or event == "stderr" then
-      list_prs({}, data)
+      local entries = {}
+
+      local items = vim.fn.json_decode(data)
+      for _, item in ipairs(items) do
+        -- print(vim.inspect(item))
+        table.insert(entries, {
+          value = item.url,
+          display = item.title,
+          ordinal = item.title,
+        })
+      end
+
+      list_prs({}, entries)
     end
   end
 
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list --jq '.[] | .url' --json url", {
+    vim.fn.jobstart("gh pr list --json title,url --limit 10", {
       on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
