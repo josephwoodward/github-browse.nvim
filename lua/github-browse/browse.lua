@@ -38,26 +38,35 @@ local function callback(_, data, event)
   end
 end
 
+local function open_in_browser(path)
+  local cmd
+  if vim.fn.has("mac") == 1 then
+    cmd = { "open", path }
+  elseif vim.fn.has("unix") == 1 then
+    cmd = { "xdg-open", path }
+  elseif vim.fn.has("win32") == 1 then
+    cmd = { "cmd.exe", "/c", "start", path }
+  else
+    print("Unsupported system for opening browser.")
+    return
+  end
+
+  vim.fn.jobstart(cmd, { detach = true })
+end
+
 M.browse_prs = function()
   local pickers = require("telescope.pickers")
   local finders = require("telescope.finders")
   local conf = require("telescope.config").values
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
 
   local list_prs = function(opts, data)
     opts = opts or {}
     pickers
         .new(opts, {
           prompt_title = "View Pull Requests",
-          -- finder = finders.new_table({
-          --   -- results = { "red", "green", "blue" },
-          --   results = data
-          -- }),
           finder = finders.new_table({
-            -- results = {
-            --   { "red", "#ff0000" },
-            --   { "green", "#00ff00" },
-            --   { "blue", "#0000ff" },
-            -- },
             results = data,
             entry_maker = function(entry)
               return {
@@ -68,6 +77,13 @@ M.browse_prs = function()
             end,
           }),
           sorter = conf.generic_sorter(opts),
+          attach_mappings = function(prompt_bufnr, map)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              open_in_browser(action_state.get_selected_entry().value)
+            end)
+            return true
+          end,
         })
         :find()
   end
