@@ -22,22 +22,6 @@ M.browse_repo = function()
   execute_command("browse")
 end
 
-local function callback(_, data, event)
-  if event == "exit" then
-  elseif event == "stdout" or event == "stderr" then
-    -- vim.inspect(type(data))
-    -- print(vim.inspect(type(data)))
-    for i = 1, #data do
-      -- print(data[i])
-      print(vim.inspect(type(data[i])))
-    end
-    -- for k, v in pairs(data) do
-    --   print(k, v[0], v[1], v[2])
-    -- end
-    -- print(data)
-  end
-end
-
 local function open_in_browser(path)
   local cmd
   if vim.fn.has("mac") == 1 then
@@ -47,7 +31,7 @@ local function open_in_browser(path)
   elseif vim.fn.has("win32") == 1 then
     cmd = { "cmd.exe", "/c", "start", path }
   else
-    print("Unsupported system for opening browser.")
+    vim.notify("GithubBrowse: Unsupported system for opening browser.", vim.log.levels.ERROR)
     return
   end
 
@@ -61,13 +45,13 @@ M.browse_prs = function()
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
 
-  local list_prs = function(opts, data)
+  local list_prs = function(opts, entries)
     opts = opts or {}
     pickers
         .new(opts, {
           prompt_title = "View Pull Requests",
           finder = finders.new_table({
-            results = data,
+            results = entries,
             entry_maker = function(entry)
               return {
                 value = entry.value,
@@ -76,14 +60,14 @@ M.browse_prs = function()
               }
             end,
           }),
-          sorter = conf.generic_sorter(opts),
-          attach_mappings = function(prompt_bufnr, map)
+          attach_mappings = function(prompt_bufnr, _)
             actions.select_default:replace(function()
               actions.close(prompt_bufnr)
               open_in_browser(action_state.get_selected_entry().value)
             end)
             return true
           end,
+          sorter = conf.generic_sorter(opts),
         })
         :find()
   end
@@ -109,24 +93,12 @@ M.browse_prs = function()
   end
 
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list --json title,url --limit 10", {
+    vim.fn.jobstart("gh pr list --json title,url --limit 20", {
       on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
     }),
   })
-
-  -- local colors = function(opts)
-  --   opts = opts or {}
-  --   pickers.new(opts, {
-  --     prompt_title = "colors",
-  --     finder = finders.new_table {
-  --       results = { "red", "green", "blue" }
-  --     },
-  --     sorter = conf.generic_sorter(opts),
-  --   }):find()
-  -- end
-  -- colors()
 end
 
 ---@param opts object
