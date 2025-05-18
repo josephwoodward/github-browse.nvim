@@ -44,6 +44,22 @@ M.browse_prs = function()
   local conf = require("telescope.config").values
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
+  local entry_display = require("telescope.pickers.entry_display")
+
+  local displayer = entry_display.create({
+    separator = " ",
+    items = {
+      { width = 20 }, -- label
+      { remaining = true }, -- subtext
+    },
+  })
+
+  local make_display = function(entry)
+    return displayer({
+      entry.label,
+      { entry.subtext, "Comment" },  -- Use 'Comment' or another faint highlight group
+    })
+  end
 
   local list_prs = function(opts, entries)
     opts = opts or {}
@@ -55,8 +71,8 @@ M.browse_prs = function()
             entry_maker = function(entry)
               return {
                 value = entry.value,
-                display = entry.display,
-                ordinal = entry.ordinal,
+                display = "#" .. entry.number .. " - " .. entry.display,
+                ordinal = entry.number,
               }
             end,
           }),
@@ -84,7 +100,7 @@ M.browse_prs = function()
         table.insert(entries, {
           value = item.url,
           display = item.title,
-          ordinal = item.title,
+          number = item.number,
         })
       end
 
@@ -93,7 +109,7 @@ M.browse_prs = function()
   end
 
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list --json title,url --limit 20", {
+    vim.fn.jobstart("gh pr list --json number,title,url --limit 20", {
       on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
