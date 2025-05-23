@@ -71,7 +71,7 @@ M.browse_prs = function()
             entry_maker = function(entry)
               return {
                 value = entry.value,
-                display = "#" .. entry.number .. " - " .. entry.display,
+                display = "#" .. entry.number .. " - " .. entry.display .. " - " .. entry.author,
                 ordinal = entry.number,
               }
             end,
@@ -101,6 +101,7 @@ M.browse_prs = function()
           value = item.url,
           display = item.title,
           number = item.number,
+          author = item.author.name,
         })
       end
 
@@ -109,7 +110,7 @@ M.browse_prs = function()
   end
 
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list --json number,title,url --limit 20", {
+    vim.fn.jobstart("gh pr list --json number,title,url,author --limit 20", {
       on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
