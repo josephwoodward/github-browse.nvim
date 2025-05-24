@@ -44,38 +44,25 @@ M.browse_prs = function()
   local conf = require("telescope.config").values
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
-  local entry_display = require("telescope.pickers.entry_display")
-
-  local displayer = entry_display.create({
-    separator = " ",
-    items = {
-      { width = 20 }, -- label
-      { remaining = true }, -- subtext
-    },
-  })
-
-  local make_display = function(entry)
-    return displayer({
-      entry.label,
-      { entry.subtext, "Comment" },  -- Use 'Comment' or another faint highlight group
-    })
-  end
 
   local list_prs = function(opts, entries)
     opts = opts or {}
+
+    local finder = finders.new_table({
+      results = entries,
+      entry_maker = function(entry)
+        return {
+          value = entry.value,
+          display = "#" .. entry.number .. " - " .. entry.display .. " - " .. entry.author,
+          ordinal = entry.number,
+        }
+      end,
+    })
+
     pickers
         .new(opts, {
           prompt_title = "View Pull Requests",
-          finder = finders.new_table({
-            results = entries,
-            entry_maker = function(entry)
-              return {
-                value = entry.value,
-                display = "#" .. entry.number .. " - " .. entry.display .. " - " .. entry.author,
-                ordinal = entry.number,
-              }
-            end,
-          }),
+          finder = finder,
           attach_mappings = function(prompt_bufnr, _)
             actions.select_default:replace(function()
               actions.close(prompt_bufnr)
@@ -133,16 +120,8 @@ end
 --- Open file and line number under the course in your browser.
 ---@param opts object
 M.browse_line = function(opts)
-  -- local start_pos = vim.fn.line("v")
-  -- local end_pos = vim.fn.line(".")
-  -- local start_pos = vim.api.nvim_buf_get_mark(0, "<") ---@type number[]
-  -- local end_pos = vim.api.nvim_buf_get_mark(0, ">") ---@type number[]
-  -- print(start_pos)
-  -- print(end_pos)
-
   local cursor_pos, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local file = vim.fn.expand("%:.")
-
   vim.fn.jobstart({ "gh", "browse", string.format("%s:%s", file, cursor_pos) })
 end
 
