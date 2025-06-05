@@ -53,7 +53,7 @@ M.browse_prs = function()
       entry_maker = function(entry)
         return {
           value = entry.value,
-          display = "#" .. entry.number .. " - " .. entry.display .. " - " .. entry.author,
+          display = entry.branch .. " (#" .. entry.number .. ")" .. " - " .. entry.display,
           ordinal = entry.number,
         }
       end,
@@ -66,7 +66,7 @@ M.browse_prs = function()
           attach_mappings = function(prompt_bufnr, _)
             actions.select_default:replace(function()
               actions.close(prompt_bufnr)
-              open_in_browser(action_state.get_selected_entry().value)
+              open_in_browser(action_state.get_selected_entry().value .. "/files")
             end)
             return true
           end,
@@ -80,15 +80,21 @@ M.browse_prs = function()
       -- TODO: handle this gracefully
     elseif event == "stdout" or event == "stderr" then
       local entries = {}
-
       local items = vim.fn.json_decode(data)
       for _, item in ipairs(items) do
         -- print(vim.inspect(item))
+
+        -- local name = ""
+        -- if isempty(foo) then
+        --   foo = "default value"
+        -- end
+
         table.insert(entries, {
           value = item.url,
           display = item.title,
+          branch = item.headRefName,
           number = item.number,
-          author = item.author.name,
+          -- author = item.author.name
         })
       end
 
@@ -97,7 +103,7 @@ M.browse_prs = function()
   end
 
   vim.fn.jobwait({
-    vim.fn.jobstart("gh pr list --json number,title,url,author --limit 20", {
+    vim.fn.jobstart("gh pr list --json number,title,url,author,headRefName --limit 20", {
       on_stdout = cb,
       stdout_buffered = true,
       stderr_buffered = true,
