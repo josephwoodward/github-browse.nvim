@@ -1,6 +1,6 @@
 # GitHub Browse Neovim Extension
 
-A small Neovim wrapper around the GitHub CLI `gh browse` tool to enable fast sharing links to lines, repos or commits in GitHub.
+A small Neovim wrapper around the GitHub CLI `gh browse` tool improve workflows when switching between Neovim and GitHub to enable faster sharing links to lines, repos or commits.
 
 ## Requirements
 
@@ -25,19 +25,19 @@ The plugin defines commands that wrap the functionality of zoxide:
 
 ## Demos
 
-### Browse to Line (`:GithubBrowse line`)
+### Open Browse to Line (`:GithubBrowse line`)
 
 Go to the current line in GitHub:
 
 ![browse-line](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/8cfffe4d-775e-4efa-ab1b-f8aaa3db0bef)
 
-### Browse to Line (`:GithubBrowse repo`)
+### Browse to Repository (`:GithubBrowse repo`)
 
 Load the current repository in GitHub:
 
 ![browse-repo](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/aac84232-79ab-49dc-9434-c64405695c8c)
 
-### Browse to Line (`:GithubBrowse commit`)
+###  (`:GithubBrowse commit`)
 
 Go to the current commit in GitHub:
 
