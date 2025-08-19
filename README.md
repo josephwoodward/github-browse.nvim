@@ -25,17 +25,29 @@ The plugin defines commands that wrap the functionality of zoxide:
 
 ## Demos
 
-### Open Browse to Line (`:GithubBrowse line`)
+### Browse to Line (`:GithubBrowse line`)
 
 Go to the current line in GitHub:
 
 ![browse-line](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/8cfffe4d-775e-4efa-ab1b-f8aaa3db0bef)
+
+You can also use the `copy_line()` function to create a keymap that copies the line number URL directly to your clipboard.
+
+```lua
+keymap.set('n', '<leader>gbl', function()
+  require('github-browse.browse').copy_line()
+end)
+```
+
+---
 
 ### Browse to Repository (`:GithubBrowse repo`)
 
 Load the current repository in GitHub:
 
 ![browse-repo](https://github.com/josephwoodward/github-browse.nvim/assets/1237341/aac84232-79ab-49dc-9434-c64405695c8c)
+
+---
 
 ###  (`:GithubBrowse commit`)
 
